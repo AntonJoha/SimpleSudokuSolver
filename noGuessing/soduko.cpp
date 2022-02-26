@@ -2,25 +2,25 @@
 #include <iostream>
 
 void soduko::print_board(){
-				std::cout << "Board\n";
-				for (int i = 0; i < BOARD_SIZE; ++i){
-								for (int j = 0; j < BOARD_SIZE; ++j){
-												std::cout << board[j][i] << " ";
-								}
-								std::cout << "\n"; 
+		std::cout << "Board\n";
+		for (int i = 0; i < BOARD_SIZE; ++i){
+				for (int j = 0; j < BOARD_SIZE; ++j){
+						std::cout << board[j][i] << " ";
 				}
-				std::cout << "Potential\n";
-				for (int i = 0; i < BOARD_SIZE; ++i){
-								for (int j = 0; j < BOARD_SIZE; ++j){
-												std::cout << potential_values[j][i] << " ";
-								}
-								std::cout << "\n"; 
+				std::cout << "\n"; 
+		}
+		std::cout << "Potential\n";
+		for (int i = 0; i < BOARD_SIZE; ++i){
+				for (int j = 0; j < BOARD_SIZE; ++j){
+						std::cout << potential_values[j][i] << " ";
 				}
+				std::cout << "\n"; 
+		}
 
 }
 
 uint16_t soduko::full_value(){
-		
+
 		uint16_t toReturn = 0;
 		for (uint16_t i = 1; i <= BOARD_SIZE; ++i) toReturn += get_bitwise_value(i);
 		return toReturn;
@@ -35,15 +35,15 @@ void soduko::handle_potential_values(){
 		handle_square_potential();
 		handle_vertical_potential();
 		handle_horizontal_porential();
-		
+
 
 }
 
 void soduko::handle_square(int x, int y){
-		
+
 		uint16_t val = 0;
 		for (int i = 0; i < BOARD_SIZE; ++i){
-				val += get_bitwise_value(board[x + i%3][y + i/3]);
+			val += get_bitwise_value(board[x + i%3][y + i/3]);
 		}
 		val = ~val;
 		for (int i = 0; i < BOARD_SIZE; ++i){
@@ -75,7 +75,7 @@ void soduko::handle_vertical_potential(){
 
 }
 
-		
+
 void soduko::handle_horizontal_porential(){
 
 		for (int i = 0; i < BOARD_SIZE; ++i){
@@ -91,29 +91,29 @@ void soduko::handle_horizontal_porential(){
 }
 
 
-		
+
 soduko::soduko(std::istream &in){
 
 		int c;
 		int pos = 0;
 
 		uint16_t val = 0;
-				
-for (int i = 0; i < BOARD_SIZE + 1; ++i) val += get_bitwise_value(i);
+
+		for (int i = 0; i < BOARD_SIZE + 1; ++i) val += get_bitwise_value(i);
 
 		while(true){
 				c = in.get();
 				if (c == -1 || c == 10) break;
-				
+
 				board[pos % BOARD_SIZE][pos / BOARD_SIZE] = c - '0';
 				potential_values[pos % BOARD_SIZE][pos / BOARD_SIZE] = val;
 				++pos;
 		}
 		if (pos != BOARD_SIZE*BOARD_SIZE){
 				for (; pos < BOARD_SIZE*BOARD_SIZE; ++pos){
-								board[pos %BOARD_SIZE][pos / BOARD_SIZE] = 0;
-								potential_values[pos % BOARD_SIZE][pos / BOARD_SIZE] = val;
-								std::cout << pos << " \n";
+						board[pos %BOARD_SIZE][pos / BOARD_SIZE] = 0;
+						potential_values[pos % BOARD_SIZE][pos / BOARD_SIZE] = val;
+						std::cout << pos << " \n";
 				}
 		}
 
@@ -138,8 +138,8 @@ bool soduko::is_solved(){
 
 
 void soduko::cycle_again(){
-		
-		
+
+
 		for (int i = 0; i < BOARD_SIZE; ++i){
 				for (int j = 0; j < BOARD_SIZE; ++j){
 						if (board[i][j] != 0) continue;
@@ -150,7 +150,7 @@ void soduko::cycle_again(){
 										break;
 								}
 						}
-				
+
 				}
 		}
 		handle_potential_values();
@@ -167,7 +167,7 @@ uint16_t soduko::get_bitwise_value(uint16_t val){
 
 bool soduko::unsolveable(){
 
-		
+
 		return false;
 
 }
