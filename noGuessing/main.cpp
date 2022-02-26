@@ -1,4 +1,4 @@
-#include "soduko.hpp"
+#include "sudoku.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -14,7 +14,7 @@ int main(int argc, char * argv[]){
 				std::fstream * file = new std::fstream();
 				file->open(argv[1]);
 
-				soduko *s = new soduko( *file);
+				sudoku *s = new sudoku( *file);
 
 				std::cout << "DONE\n";
 				while (!s->is_solved()){

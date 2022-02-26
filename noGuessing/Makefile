@@ -1,12 +1,12 @@
 
-prog: main.o soduko.o
-	g++ -o prog main.o soduko.o -g
+prog: main.o sudoku.o
+	g++ -o prog main.o sudoku.o -g
 
 main.o: main.cpp
 	g++ -c main.cpp -g
 
-soduko.o: soduko.cpp
-	g++ -c soduko.cpp -g
+sudoku.o: sudoku.cpp
+	g++ -c sudoku.cpp -g
 
 clean:
 	rm -f *.o

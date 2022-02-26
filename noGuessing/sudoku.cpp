@@ -1,7 +1,7 @@
-#include "soduko.hpp"
+#include "sudoku.hpp"
 #include <iostream>
 
-void soduko::print_board(){
+void sudoku::print_board(){
 		std::cout << "Board\n";
 		for (int i = 0; i < BOARD_SIZE; ++i){
 				for (int j = 0; j < BOARD_SIZE; ++j){
@@ -19,18 +19,18 @@ void soduko::print_board(){
 
 }
 
-uint16_t soduko::full_value(){
+uint16_t sudoku::full_value(){
 
 		uint16_t toReturn = 0;
 		for (uint16_t i = 1; i <= BOARD_SIZE; ++i) toReturn += get_bitwise_value(i);
 		return toReturn;
 }
 
-void soduko::set_values(){
+void sudoku::set_values(){
 
 }
 
-void soduko::handle_potential_values(){
+void sudoku::handle_potential_values(){
 
 		handle_square_potential();
 		handle_vertical_potential();
@@ -39,7 +39,7 @@ void soduko::handle_potential_values(){
 
 }
 
-void soduko::handle_square(int x, int y){
+void sudoku::handle_square(int x, int y){
 
 		uint16_t val = 0;
 		for (int i = 0; i < BOARD_SIZE; ++i){
@@ -49,9 +49,26 @@ void soduko::handle_square(int x, int y){
 		for (int i = 0; i < BOARD_SIZE; ++i){
 				potential_values[x + i%3][y + i/3] &= val;
 		}
+
+		for (uint16_t i = 1; i < 10; ++i){
+			val = get_bitwise_value(i);
+			int count = 0;
+			for (int j = 0; j < BOARD_SIZE; ++j){
+				if (val & potential_values[x + j %3][y + j /3]) ++count;
+			}
+			if (count == 1){
+				for (int j = 0; j < BOARD_SIZE; ++j){
+						if (val & potential_values[x + j %3 ][y + j /3]) {
+							potential_values[x + j %3][y + j /3] = 0;
+							board[x + j % 3][y + j /3] = i;
+						}
+					}
+			}
+		}
+
 }
 
-void soduko::handle_square_potential(){
+void sudoku::handle_square_potential(){
 
 		for (int i = 0; i < 3; ++i){
 				for (int j = 0; j < 3; ++j){
@@ -60,7 +77,7 @@ void soduko::handle_square_potential(){
 		}
 }
 
-void soduko::handle_vertical_potential(){
+void sudoku::handle_vertical_potential(){
 
 		for (int i = 0; i < BOARD_SIZE; ++i){
 				uint16_t val = 0;
@@ -72,12 +89,31 @@ void soduko::handle_vertical_potential(){
 						potential_values[i][j] &= val;
 				}
 		}
+		
 
+		for (uint16_t i = 1; i < 10; ++i){
+			uint16_t val = get_bitwise_value(i);
+			for (int j = 0; j < BOARD_SIZE; ++j){
+				int count = 0;
+				for (int k = 0; k < BOARD_SIZE; ++k){
+					if ((val & potential_values[j][k])) count++;
+				}
+				if (count == 1){
+					for (int k = 0; k < BOARD_SIZE; ++k){
+						if (val & potential_values[j][k]) {
+							potential_values[j][k] = 0;
+							board[j][k] = i;
+						}
+					}
+				}
+			}
+		}
 }
 
 
-void soduko::handle_horizontal_porential(){
+void sudoku::handle_horizontal_porential(){
 
+		
 		for (int i = 0; i < BOARD_SIZE; ++i){
 				uint16_t val = 0;
 				for (int j = 0; j < BOARD_SIZE; ++j){
@@ -88,11 +124,30 @@ void soduko::handle_horizontal_porential(){
 						potential_values[j][i] &= val;
 				}
 		}
+
+		
+	//Go through and check if it's the only instance of a possible value;
+		for (uint16_t i = 1; i < 10; ++i){
+			uint16_t val = get_bitwise_value(i);
+			for (int j = 0; j < BOARD_SIZE; ++j){
+				int count = 0;
+				for (int k = 0; k < BOARD_SIZE; ++k){
+					if ((val & potential_values[k][j])) count++;
+				}
+				if (count == 1){
+					for (int k = 0; k < BOARD_SIZE; ++k){
+						if (val & potential_values[k][j]) {
+							potential_values[k][j] = 0;
+							board[k][j] = i;
+						}
+					}
+				}
+			}
+		}
 }
 
 
-
-soduko::soduko(std::istream &in){
+sudoku::sudoku(std::istream &in){
 
 		int c;
 		int pos = 0;
@@ -106,7 +161,11 @@ soduko::soduko(std::istream &in){
 				if (c == -1 || c == 10) break;
 
 				board[pos % BOARD_SIZE][pos / BOARD_SIZE] = c - '0';
-				potential_values[pos % BOARD_SIZE][pos / BOARD_SIZE] = val;
+				if (c - '0' == 0)
+					potential_values[pos % BOARD_SIZE][pos / BOARD_SIZE] = val;
+				else
+					potential_values[pos % BOARD_SIZE][pos / BOARD_SIZE] = 0;
+					
 				++pos;
 		}
 		if (pos != BOARD_SIZE*BOARD_SIZE){
@@ -122,7 +181,7 @@ soduko::soduko(std::istream &in){
 		handle_potential_values();
 }
 
-bool soduko::is_solved(){
+bool sudoku::is_solved(){
 		uint16_t expected = full_value();
 
 		for (int i = 0; i < BOARD_SIZE; ++i){
@@ -137,16 +196,16 @@ bool soduko::is_solved(){
 
 
 
-void soduko::cycle_again(){
+void sudoku::cycle_again(){
 
 
 		for (int i = 0; i < BOARD_SIZE; ++i){
 				for (int j = 0; j < BOARD_SIZE; ++j){
 						if (board[i][j] != 0) continue;
-						for (int x = 1; x < BOARD_SIZE +1; ++x){
+						for (int x  = 0 ; x < BOARD_SIZE; ++x){
 								if (potential_values[i][j] == possible_values[x]){
 										board[i][j] = x;
-										potential_values[i][j] = 0;
+										potential_values[i][j] = possible_values[x];
 										break;
 								}
 						}
@@ -154,18 +213,17 @@ void soduko::cycle_again(){
 				}
 		}
 		handle_potential_values();
-
 }
 
 
 
 
-uint16_t soduko::get_bitwise_value(uint16_t val){
+uint16_t sudoku::get_bitwise_value(uint16_t val){
 		if (val == 0) return 0;
 		return 1 << (val - 1); 
 }
 
-bool soduko::unsolveable(){
+bool sudoku::unsolveable(){
 
 
 		return false;

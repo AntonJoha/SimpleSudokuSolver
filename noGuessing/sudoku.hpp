@@ -6,7 +6,7 @@
 #define BOARD_SIZE 9
 
 
-class soduko{
+class sudoku{
 
 		private: 
 
@@ -31,8 +31,8 @@ class soduko{
 
 		public:
 		
-		soduko(std::istream&);
-		//Return true if the soduko is solved
+		sudoku(std::istream&);
+		//Return true if the sudoku is solved
 		bool is_solved();
 		//Do one cycle of solving 
 		void cycle_again();
